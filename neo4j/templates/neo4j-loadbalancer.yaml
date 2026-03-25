@@ -22,10 +22,9 @@
   {{- end -}}
 {{- end -}}
 
-{{- if and (not $loadBalancerExists) ($isLoadBalancerEnabled) -}}
+{{- if and (not $loadBalancerExists) ($isLoadBalancerEnabled) }}
 {{- $defaultSpec := include "neo4j.services.neo4j.defaultSpec" . | fromYaml }}
 {{- $spec := get $defaultSpec .Values.services.neo4j.spec.type | merge .Values.services.neo4j.spec  }}
-# Service for applications that need access to neo4j
 apiVersion: v1
 kind: Service
 metadata:
