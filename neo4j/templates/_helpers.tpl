@@ -189,7 +189,7 @@ E.g. by adding `--set podSpec.loadbalancer=include`
 {{- define "neo4j.resources.evaluateCPU" -}}
 
     {{/* check regex here :- https://regex101.com/r/wJsFcO/1 */}}
-    {{ $cpuRegex := "(^\\d+)((\\.?[^\\.a-zA-Z])?)([0-9]*m?$)" }}
+    {{- $cpuRegex := "(^\\d+)((\\.?[^\\.a-zA-Z])?)([0-9]*m?$)" -}}
 
     {{- $cpu := .Values.neo4j.resources.requests.cpu | toString }}
 
@@ -201,10 +201,10 @@ E.g. by adding `--set podSpec.loadbalancer=include`
     {{- $cpuFloat := 0.0 -}}
     {{/* cpu="123m" , convert millicore cpu to cpu */}}
     {{- if contains "m" $cpuRegexValue -}}
-        {{ $cpuFloat = $cpuRegexValue | replace "m" "" | float64 -}}
-        {{ $cpuFloat = divf $cpuFloat 1000 -}}
+        {{- $cpuFloat = $cpuRegexValue | replace "m" "" | float64 -}}
+        {{- $cpuFloat = divf $cpuFloat 1000 -}}
     {{- else -}}
-        {{ $cpuFloat = $cpuRegexValue | float64 }}
+        {{- $cpuFloat = $cpuRegexValue | float64 -}}
     {{- end -}}
 
     # {{- if lt $cpuFloat 0.5 }}
@@ -215,9 +215,8 @@ E.g. by adding `--set podSpec.loadbalancer=include`
 
 {{- define "neo4j.resources.evaluateMemory" -}}
     {{/* check regex here :- https://regex101.com/r/68NEQV/1 */}}
-    {{ $memoryRegex := "(^\\d+)((\\.?[^\\.a-zA-Z\\s])?)(\\d*)(([EkMGTP]?|[EKMGTP]i?|e[+-]?\\d*[EKMGTP]?)$)" -}}
-
-    {{- $memory := .Values.neo4j.resources.requests.memory | toString }}
+    {{- $memoryRegex := "(^\\d+)((\\.?[^\\.a-zA-Z\\s])?)(\\d*)(([EkMGTP]?|[EKMGTP]i?|e[+-]?\\d*[EKMGTP]?)$)" -}}
+    {{- $memory := .Values.neo4j.resources.requests.memory | toString -}}
 
     {{- if not (regexMatch $memoryRegex $memory) -}}
         {{ fail (printf "Invalid memory value %s\n%s" $memory (include "neo4j.resources.minMemoryMessage" .)) }}
@@ -235,31 +234,31 @@ E.g. by adding `--set podSpec.loadbalancer=include`
 
     {{/* 1kilo = 0.000001G */}}
     {{- if or (contains "K" $memory) (contains "k" $memory) -}}
-        {{ $memoryFloat = divf ($memory | replace "K" "" | float64) 1000000 -}}
+        {{- $memoryFloat = divf ($memory | replace "K" "" | float64) 1000000 -}}
 
     {{/* 1mega = 0.001G */}}
     {{- else if contains "M" $memory -}}
-        {{ $memoryFloat = divf ($memory | replace "M" "" | float64) 1000 -}}
+        {{- $memoryFloat = divf ($memory | replace "M" "" | float64) 1000 -}}
 
     {{/* giga */}}
     {{- else if contains "G" $memory -}}
-        {{ $memoryFloat = $memory | replace "G" "" | float64 -}}
+        {{- $memoryFloat = $memory | replace "G" "" | float64 -}}
 
     {{/* 1tera = 1000G */}}
     {{- else if contains "T" $memory -}}
-        {{ $memoryFloat =  mulf ($memory | replace "T" "" | float64) 1000 -}}
+        {{- $memoryFloat =  mulf ($memory | replace "T" "" | float64) 1000 -}}
 
     {{/* 1peta = 1000000G */}}
     {{- else if contains "P" $memory -}}
-        {{ $memoryFloat = mulf ($memory | replace "P" "" | float64) 1000000 -}}
+        {{- $memoryFloat = mulf ($memory | replace "P" "" | float64) 1000000 -}}
 
     {{/* 1exa = 1000000000G */}}
     {{- else if contains "E" $memory -}}
-        {{ $memoryFloat = mulf ($memory | replace "E" "" | float64) 1000000000 -}}
+        {{- $memoryFloat = mulf ($memory | replace "E" "" | float64) 1000000000 -}}
 
     {{/* 1Byte = 0.000000001G */}}
     {{- else -}}
-        {{ $memoryFloat = divf ($memory | float64) 1000000000 -}}
+        {{- $memoryFloat = divf ($memory | float64) 1000000000 -}}
     {{- end -}}
 
     # {{- if lt $memoryFloat 2.0 }}
